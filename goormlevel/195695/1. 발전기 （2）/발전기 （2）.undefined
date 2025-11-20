@@ -1,0 +1,99 @@
+#include <iostream>
+#include <queue>
+#include <unordered_map>
+using namespace std;
+
+int N{};
+int K{};
+
+int grid[1005][1005];
+int visited[1005][1005];
+int buildings[35];
+
+int dx[] = {0, 0, 1, -1};
+int dy[] = {1, -1, 0, 0};
+
+int bfs(int x, int y)
+{
+	queue<pair<int, int>> q;
+	q.push({x, y});
+	visited[x][y] = true;
+	int buildingType = grid[x][y];
+	int sameBuildingCount = 1;
+
+	while (!q.empty())
+	{
+		int x = q.front().first;
+		int y = q.front().second;
+		q.pop();
+
+		for (int i=0; i<4; i++)
+		{
+				int nx = x + dx[i];
+				int ny = y + dy[i];
+
+				if (nx>=0 && ny>=0 && nx<N && ny<N)
+				{
+					if (grid[nx][ny] == buildingType && !visited[nx][ny])
+					{
+						visited[nx][ny] = true;
+						sameBuildingCount++;
+						q.push({nx, ny});
+					}
+				}
+		}
+	}
+	return sameBuildingCount;
+}
+
+int main() {
+
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	
+	cin >> N >> K;
+	for (int i=0; i<N; i++)
+	{
+		for (int j=0; j<N; j++)
+		{
+					cin >> grid[i][j];
+		}
+	}
+
+	for (int i=0; i<N; i++)
+	{
+		for (int j=0; j<N; j++)
+		{
+					if (!visited[i][j])
+					{
+						int type = grid[i][j];
+						int size = bfs(i, j);
+						if (size >= K)
+						{
+							buildings[type]++;
+						}
+					}
+		}
+	}
+
+	int maxType = -1;
+	int maxCount = 0;
+
+	for (int type=1; type<=30; type++)
+	{
+		if (buildings[type] >= maxCount)
+		{
+			if (buildings[type] > maxCount)
+			{
+				maxCount = buildings[type];
+				maxType = type;
+			}
+			else
+				maxType = max(maxType, type);
+		}
+	}
+
+	cout << maxType;
+	
+	return 0;
+}
