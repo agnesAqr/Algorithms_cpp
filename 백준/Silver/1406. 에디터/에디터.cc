@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <list>
+
 using namespace std;
 
 int main()
@@ -9,45 +10,46 @@ int main()
     cin.tie(NULL);
     cout.tie(NULL);
 
-    string existString{};
-    cin >> existString;
-    list<char> listString(existString.begin(), existString.end());
+    string initialStr;
+    cin >> initialStr;
 
-    int M{};
+    list<char> editor(initialStr.begin(), initialStr.end());
+
+    int M;
     cin >> M;
-    cin.ignore();
 
-    auto it = listString.end();
-
-    for (int i=0; i<M; ++i)
+    auto cursor = editor.end();
+    
+    for (int i = 0; i < M; ++i)
     {
-        string order{};
-        getline(cin, order);
+        char cmd;
+        cin >> cmd;
 
-        char cmd = order[0];
-        
-        if (cmd == 'L' && it != listString.begin())
-        {
-            it = prev(it);
+        if (cmd == 'L') {
+            if (cursor != editor.begin()) {
+                cursor--;
+            }
         }
-        else if (cmd == 'D' && it != listString.end())
-        {
-            it = next(it);
+        else if (cmd == 'D') {
+            if (cursor != editor.end()) {
+                cursor++;
+            }
         }
-        else if (cmd == 'B' && it != listString.begin())
-        {
-            it = listString.erase(prev(it));
+        else if (cmd == 'B') {
+            if (cursor != editor.begin()) {
+                cursor = editor.erase(--cursor); 
+            }
         }
-        else if (cmd == 'P')
-        {
-            listString.insert(it, order[2]);
+        else if (cmd == 'P') {
+            char addChar;
+            cin >> addChar;
+            editor.insert(cursor, addChar);
         }
     }
 
-    for (char c : listString)
-    {
+    for (char c : editor) {
         cout << c;
     }
-    
+
     return 0;
 }
