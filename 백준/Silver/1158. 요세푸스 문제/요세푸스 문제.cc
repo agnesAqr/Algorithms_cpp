@@ -1,45 +1,37 @@
 #include <iostream>
-#include <list>
-#include <numeric>
+#include <queue>
 
 using namespace std;
 
 int main()
 {
-    ios::sync_with_stdio(false);
-    cin.tie(NULL);
-    cout.tie(NULL);
+	ios::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
 
-    int N, K;
-    cin >> N >> K;
+	int N{}, K{};
+	cin >> N >> K;
 
-    list<int> lst(N);
-    iota(lst.begin(), lst.end(), 1);
+	queue<int> q;
+	for (int i = 1; i <= N; ++i)
+		q.push(i);
+	
+	cout << "<";
 
-    auto it = lst.begin();
+	while (!q.empty())
+	{
+		for (int i = 0; i < K - 1; ++i)
+		{
+			q.push(q.front());
+			q.pop();
+		}
+		cout << q.front();
+		q.pop();
+		
+		if (!q.empty())
+			cout << ", ";
+	}
+	cout << ">";
 
-    cout << "<";
-    while (!lst.empty())
-    {
-        for (int i = 0; i < K - 1; ++i)
-        {
-            it++;
-            if (it == lst.end())
-            {
-                it = lst.begin();
-            }
-        }
-
-        cout << *it;
-        if (lst.size() > 1) cout << ", ";
-
-        it = lst.erase(it);
-        if (it == lst.end()) 
-        {
-            it = lst.begin();
-        }
-    }
-    cout << ">";
-
-    return 0;
+	return 0;
 }
