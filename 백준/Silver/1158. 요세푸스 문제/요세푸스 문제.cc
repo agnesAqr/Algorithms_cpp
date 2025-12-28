@@ -1,5 +1,4 @@
-#include <iostream>
-#include <queue>
+#include <bits/stdc++.h>
 
 using namespace std;
 
@@ -9,26 +8,19 @@ int main()
 	cin.tie(NULL);
 	cout.tie(NULL);
 
-	int N{}, K{};
+	int N{}, K{}, idx{};
 	cin >> N >> K;
 
-	queue<int> q;
-	for (int i = 1; i <= N; ++i)
-		q.push(i);
+	vector<int> vec(N);
+	iota(vec.begin(), vec.end(), 1);
 	
 	cout << "<";
-
-	while (!q.empty())
+	while (!vec.empty())
 	{
-		for (int i = 0; i < K - 1; ++i)
-		{
-			q.push(q.front());
-			q.pop();
-		}
-		cout << q.front();
-		q.pop();
-		
-		if (!q.empty())
+		idx = (idx + K - 1) % vec.size();
+		cout << vec[idx];
+		vec.erase(vec.begin() + idx);
+		if (vec.size() > 0)
 			cout << ", ";
 	}
 	cout << ">";
