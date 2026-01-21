@@ -1,31 +1,26 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-bool graph[1000][1000];
-bool visited[1000];
+vector<vector<int>> adj;
+vector<bool> visited;
 
-void DFS(int nodeNum, int edgeNum, int startNode)
+void DFS(int curr)
 {
-	if (visited[startNode-1])
-		return;
+	visited[curr] = true;
+	cout << curr << " ";
 	
-	visited[startNode-1] = true;
-	cout << startNode << " ";
-
-	for(int i=0; i<nodeNum; ++i)
+	for (int next : adj[curr])
 	{
-		if (graph[startNode-1][i])
-		{
-			DFS(nodeNum, edgeNum, i+1);
-		}
+		if (!visited[next])
+			DFS(next);
 	}
 }
 
-void BFS(int nodeNum, int edgeNum, int startNode)
+void BFS(int start)
 {
 	queue<int> q;
-	q.push(startNode);
-	visited[startNode-1] = true;
+	q.push(start);
+	visited[start] = true;
 
 	while (!q.empty())
 	{
@@ -33,15 +28,12 @@ void BFS(int nodeNum, int edgeNum, int startNode)
 		q.pop();
 		cout << curr << " ";
 		
-		for (int i=0; i<nodeNum; ++i)
+		for (int next : adj[curr])
 		{
-			if (curr-1 == i)
-				continue;
-
-			if (graph[curr-1][i] && !visited[i])
+			if (!visited[next])
 			{
-				q.push(i+1);
-				visited[i] = true;
+				visited[next] = true;
+				q.push(next);
 			}
 		}
 	}
@@ -54,18 +46,27 @@ int main() {
 
 	int N{}, M{}, V{};
 	cin >> N >> M >> V;
+
+	adj.resize(N+1);
+	visited.assign(N+1, false);
+
 	for (int i=0; i<M; ++i)
 	{
-		int n1{}, n2{};
-		cin >> n1 >> n2;
-		graph[n1-1][n2-1] = 1;
-		graph[n2-1][n1-1] = 1;
+		int u, v;
+		cin >> u >> v;
+		adj[u].push_back(v);
+		adj[v].push_back(u);
 	}
 
-	DFS(N, M, V);
+	for (int i=1; i<=N; ++i)
+	{
+		sort(adj[i].begin(), adj[i].end());
+	}
+
+	DFS(V);
 	cout << "\n";
-	memset(visited, 0, sizeof(visited));
-	BFS(N, M, V);
+	visited.assign(N+1, false);
+	BFS(V);
 
 	return 0;
 }
