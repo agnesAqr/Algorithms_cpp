@@ -1,22 +1,23 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-vector<vector<int>> graph;
-vector<bool> visited;
-int result;
+int parent[101];
 
-void FindVirusComputer(int startComputer)
+int find(int x)
 {
-	visited[startComputer] = true;
+	if (parent[x] == x)
+		return x;
 
-	for (auto connectComputer : graph[startComputer])
-	{
-		if (!visited[connectComputer])
-		{
-			result++;
-			FindVirusComputer(connectComputer);
-		}
-	}
+	return parent[x] = find(parent[x]);
+}
+
+void merge(int x, int y)
+{
+	x = find(x);
+	y = find(y);
+
+	if (x!= y)
+		parent[y] = x;
 }
 
 int main() {
@@ -24,18 +25,27 @@ int main() {
 	cin.tie(NULL);
 	cout.tie(NULL);
 
-	int computerNum, pairNum;
-	cin >> computerNum >> pairNum;
-	graph.resize(computerNum+1);
-	visited.assign(computerNum+1, false);
-	for (int i=0; i<pairNum; ++i)
+	int n, m;
+	cin >> n >> m;
+
+	iota(parent+1, parent+n+1, 1);
+
+	for (int i=0; i<m; ++i)
 	{
-		int c1, c2;
-		cin >> c1 >> c2;
-		graph[c1].push_back(c2);
-		graph[c2].push_back(c1);
+		int u, v;
+		cin >> u >> v;
+		merge(u, v);
 	}
-	FindVirusComputer(1);
+
+	int result = 0;
+	int root1 = find(1);
+
+	for (int i=2; i<=n; ++i)
+	{
+		if (find(i) == root1)
+			result++;
+	}
+
 	cout << result;
 
 	return 0;
