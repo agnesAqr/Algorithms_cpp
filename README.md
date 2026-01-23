@@ -59,6 +59,14 @@
 
 </details>
 
+<details>
+<summary><b>메모리 최적화 팁 (Memory Optimization)</b></summary>
+<br>
+
+* **Visited 배열 생략**: 2차원 그리드 탐색(BFS/DFS) 문제에서 원본 배열을 수정해도 되는 경우, 방문한 위치의 값을 직접 변경(예: `'1'` $\to$ `'0'`)하면 별도의 `visited` 배열($O(NM)$) 메모리를 절약할 수 있다.
+
+</details>
+
 </br></br>
 
 ## 3. 알고리즘 판단 순서도 (Decision Tree)
