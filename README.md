@@ -4,9 +4,9 @@
 
 ## 📌 목차 (Table of Contents)
 1. [입력 크기(N)에 따른 알고리즘 선택](#1-입력-크기n에-따른-알고리즘-선택)
-2. [자료구조 & STL 필살기](#2-자료구조--stl-필살기)
-3. [알고리즘 판단 순서도 (Decision Tree)](#3-알고리즘-판단-순서도-decision-tree)
-4. [C++ 필수 문법 & 템플릿 (최적화 기법)](#4-c-필수-문법--템플릿-최적화-기법)
+2. [자료구조 & STL](#2-자료구조--stl)
+3. [알고리즘 판단 및 전략수립](#3-알고리즘-판단-및-전략수립)
+4. [구현 테크닉 & 최적화 기법](#4-구현-테크닉--최적화-기법)
 5. [자주 하는 실수 & 디버깅 체크리스트](#5-자주-하는-실수--디버깅-체크리스트)
 
 </br></br>
@@ -26,80 +26,105 @@
 
 </br></br>
 
-## 2. 자료구조 & STL 필살기
+## 2. 자료구조 & STL
 
 <details>
-<summary><b>그래프 표현 방식 (Graph Representation)</b></summary>
+<summary><b>STL</b></summary>
+<br>
+  
+<details>
+  <summary>(1) 성능 비교: List vs Queue</summary>
+  <br>
+  `std::list`와 `std::queue`는 시간 복잡도가 같아 보이지만, **메모리 구조** 때문에 실제 성능 차이가 크다.
+
+  * **`std::queue` (deque 기반)**: 데이터가 블록 단위로 연속 배치되어 **Cache Hit** 비율이 높고 빠르다. (권장)
+  * **`std::list`**: 노드가 힙 메모리에 흩어져 있어 **Cache Miss**가 잦아 느리다. 특별한 이유가 없다면 사용을 지양한다.
+</details>
+
+<details>
+<summary>(2) 빈번한 삽입/삭제 처리</summary>
+<br>
+* 벡터(`vector`)나 큐(`queue`)는 중간 요소를 삽입/삭제할 때 $O(N)$이 소요된다.
+* **리스트의 중간 위치**에서 삽입과 삭제가 매우 빈번하게 발생하는 문제에 한하여, $O(1)$ 처리가 가능한 **연결 리스트(Linked List)** 또는 **스택(Stack)** 구조를 활용하는 것이 적합하다.
+</details>
+
+</details>
+
+<details>
+<summary><b>그래프</b></summary>
 <br>
 
-문제의 그래프 특성에 따라 메모리와 속도 효율이 다른 자료구조를 선택해야 한다.
-* **희소 그래프 (Sparse Graph)**: 간선의 개수가 적은 경우</br>
-  $\rightarrow$ **인접 리스트 (`vector<vector<int>>`)** 사용 (불필요한 메모리 낭비 방지)
-* **밀집 그래프 (Dense Graph) / 플로이드-워셜**: 간선이 많거나 모든 정점 쌍의 경로가 필요한 경우</br>
+**1. 그래프 표현 방식 (Graph Representation)**
+* **희소 그래프 (Sparse Graph)**: 간선의 개수가 적은 경우 ($E \ll V^2$)
+  $\rightarrow$ **인접 리스트 (`vector<vector<int>>`)** 사용 (메모리 절약)
+* **밀집 그래프 (Dense Graph)**: 간선이 많거나 플로이드-워셜 알고리즘
   $\rightarrow$ **인접 행렬 (`int adj[N][N]`)** 사용 ($O(1)$ 접근 속도 활용)
 
+<br>
+
+**2. 메모리 최적화 (Memory Optimization)**
+* **Visited 배열 생략**: 2차원 그리드 탐색(BFS/DFS) 시 원본 배열 수정이 가능하다면, 방문한 위치의 값을 직접 변경(예: `'1'` $\to$ `'0'`)하여 **`visited` 배열 메모리($O(NM)$)를 절약**할 수 있다.
+
+</details>
+</br></br>
+
+## 3. 알고리즘 판단 및 전략수립
+
+<details>
+<summary><b>그래프 탐색 및 모델링 전략 (Graph Strategy)</b></summary>
+<br>
+
+**1. 보이지 않는 그래프 (Implicit Graph)**
+> **"상태(State)를 노드로, 상태의 변화(Transition)를 간선으로 정의하면 무엇이든 그래프로 만들 수 있다."**
+* 2차원 맵이 명시되지 않아도 **현재 상황(숫자, 좌표)**을 정점으로, **규칙에 따른 변화**를 간선으로 보면 BFS 문제로 변환 가능하다.
+
+**2. 탐색 방식 선택 가이드**
+* **노드 수($N$) 기준**:
+  * $N \le 1,000$: **DFS** (구현 간결성).
+  * $N \ge 10,000$: **BFS** (스택 오버플로우 방지 및 최단 거리 보장).
+* **목적(Output) 기준**:
+  * 단순 영역 구분/집합: **Union-Find** (가장 효율적).
+  * 최단 거리/경로 추적: **BFS**.
+* **메모리 효율 (Memory Efficiency)**:
+  * "최단 거리"를 구하는 문제가 아니라면, 경로의 끝까지 가야 하는 완전 탐색 문제에서는 **DFS**가 메모리 측면에서 압도적으로 유리하다. (BFS는 큐에 노드가 지수적($2^N$)으로 쌓일 수 있음)
+
+**3. Multi-source BFS (동시 시작)**
+* **상황**: 불, 바이러스 등 **여러 지점에서 동시에** 확산될 때.
+* **구현**: 시작점들을 **초기에 모두 큐에 넣고(Push)** BFS를 **단 한 번** 수행한다.
+* **효율성**: 각 시작점마다 반복하는 $O(K \times NM)$을 $O(NM)$으로 최적화한다.
+
 </details>
 
 <details>
-<summary><b>STL 성능 비교: List vs Queue</b></summary>
+<summary><b>완전 탐색 (Brute Force & Backtracking)</b></summary>
 <br>
 
-`std::list`와 `std::queue`는 논리적 시간 복잡도가 동일하더라도, **메모리 구조의 차이**로 인해 실제 실행 속도에서 큰 차이를 보인다.
+완전 탐색은 입력 크기($N$)가 작을 때 확실한 해답을 보장한다.
 
-* **`std::list`**: 각 노드가 힙 메모리에 개별적으로 할당되어 메모리 구조가 불연속적이다. 이는 **Cache Miss**를 빈번하게 유발하여 실행 속도를 저하시킨다.
-* **`std::queue` (deque 기반)**: 데이터를 청크(Chunk) 또는 블록 단위로 관리하여 데이터가 연속적으로 배치된다. 따라서 **Cache Hit** 비율이 높아 `list`보다 실제 처리 속도가 빠르다.
+**1. 구현 방식**
+* **단순 반복문**: $N$중 `for`/`while`문 사용.
+* **재귀 (Backtracking)**:
+  * **순열 (Permutation)**: 순서 중요 ($A, B \ne B, A$) $\to$ `next_permutation` 또는 `visited` 배열 사용.
+  * **조합 (Combination)**: 순서 무관 ($A, B = B, A$) $\to$ `start` 인덱스를 인자로 넘겨 중복 방지.
+* **비트마스킹 (Bitmasking)**: 집합의 포함 여부를 비트(`0`, `1`)로 관리하여 메모리와 연산 속도 최적화.
 
 </details>
 
 <details>
-<summary><b>빈번한 삽입/삭제 처리</b></summary>
+<summary><b>시뮬레이션 및 수열 전략 (Simulation & Math)</b></summary>
 <br>
 
-* 리스트의 중간 위치에서 삽입과 삭제가 매우 빈번하게 발생하는 경우에 한하여, $O(1)$ 처리가 가능한 **연결 리스트(Linked List)** 또는 **스택(Stack)** 구조를 활용하는 것이 적합하다.
-
-</details>
-
-<details>
-<summary><b>메모리 최적화 팁 (Memory Optimization)</b></summary>
-<br>
-
-* **Visited 배열 생략**: 2차원 그리드 탐색(BFS/DFS) 문제에서 원본 배열을 수정해도 되는 경우, 방문한 위치의 값을 직접 변경(예: `'1'` $\to$ `'0'`)하면 별도의 `visited` 배열( $O(NM)$ ) 메모리를 절약할 수 있다.
+**1. 원형 순환 (Josephus Problem) 전략**
+* **제거되는 순서**가 필요한 경우 $\rightarrow$ **Simulation**
+  * $N$이 작음 (5,000 이하): **Queue** 시뮬레이션.
+  * $K$가 매우 큼 (10억 이상): **Vector + Modulo(%) 연산** (Queue 반복 시 시간 초과).
+* **마지막 남는 하나**만 필요한 경우 $\rightarrow$ **DP / Math** ($O(N)$ 점화식 활용).
 
 </details>
 
 </br></br>
 
-## 3. 알고리즘 판단 순서도 (Decision Tree)
-
-<details>
-<summary><b>그래프 탐색 및 순회 (Graph Traversal)</b></summary>
-<br>
-
-1. **노드 개수($N$)에 따른 탐색 방식 선택**
-    * $N \le 1,000$: **DFS** 사용 (구현의 간결성).
-    * $N \ge 10,000$: **BFS** 사용 (재귀 호출로 인한 스택 오버플로우 방지).
-
-2. **문제의 요구사항 (Output Type)**
-    * 단순 영역의 개수 파악 / 집합 관리: **Union-Find** (가장 효율적).
-    * 구체적인 경로 추적 / 최단 거리 산출: **BFS** (최단 경로 보장 및 경로 복원 용이).
-
-</details>
-
-<details>
-<summary><b>원형 순환 및 수열 문제 (Circular & Sequence)</b></summary>
-<br>
-
-1. **원형 순환 (Circular / Josephus) 문제 전략**
-    * **제거되는 순서**가 필요한 경우 $\rightarrow$ **Simulation**
-        * $N$이 작음 (5,000 이하): **Queue**를 이용한 시뮬레이션.
-        * $N$은 적당하나 점프 크기($K$)가 매우 큼 (10억 이상): **Vector + Modulo(%) 연산** 활용 (Queue 반복 시 시간 초과 발생).
-    * **마지막에 남는 하나**만 필요한 경우 $\rightarrow$ **DP / Math** ($O(N)$ 점화식 활용).
-
-</details>
-
-</br></br>
-
-## 4. C++ 필수 문법 & 템플릿 (최적화 기법)
+## 4. 구현 테크닉 & 최적화 기법
 
 <details>
 <summary><b>백트래킹(Backtracking) 성능 최적화</b></summary>
@@ -116,6 +141,21 @@
 </details>
 
 <details>
+<summary><b> 2차원 배열의 1차원화 테크닉 (Optimization)</b></summary>
+<br>
+
+2차원 좌표 $(r, c)$를 1차원 인덱스 $k$로 변환하여 탐색하면, **중복 없는 조합(Combination)** 구현이 매우 쉬워진다.
+
+* **변환 공식**: $M$은 2차원 배열의 가로 길이(열의 개수)
+    * **1D to 2D**: $r = k / M$, $c = k \% M$
+    * **2D to 1D**: $k = r \times M + c$
+* **활용 (백트래킹 조합 최적화)**
+    * `start` 인덱스를 인자로 받아 `for (int k = start; k < N*M; ++k)` 반복문 하나로 처리.
+    * 이전 위치 재방문 방지 및 중복 검사 로직($visited$) 제거로 실행 속도 대폭 향상 (약 $3! = 6$배).
+
+</details>
+
+<details>
 <summary><b>모듈러(%) 연산 인덱스 처리</b></summary>
 <br>
 
@@ -128,14 +168,9 @@
 
 ## 5. 자주 하는 실수 & 디버깅 체크리스트
 
-<details>
-<summary><b>실수 & 디버깅 체크리스트 확인하기</b></summary>
-<br>
-
 - [ ] **BFS 방문 처리 시점**: 방문 처리는 반드시 **"큐에 넣을 때(Push)"** 수행해야 한다.
     * 큐에서 꺼낼 때(Pop) 처리할 경우, 동일한 노드가 큐에 중복되어 삽입될 수 있으며 이는 메모리 초과 및 시간 초과의 원인이 된다.
-- [ ] **자료구조 선택 오류**: 편의성을 이유로 무분별하게 `std::list`를 사용하지 않았는지 확인해야 한다.
-    * 데이터의 지역성(Locality)과 캐시 효율을 고려하여 `std::vector`나 `std::queue`를 우선적으로 고려해야 한다.
-- [ ] **인덱스 오프셋 오류**: 모듈러 연산이나 원형 큐 구현 시, 1-based index를 억지로 사용하려다 오프셋 에러가 발생하지 않았는지 점검한다. ($0$-based 권장)
+- [ ] **인덱스 오프셋 오류**: "K번째"라는 말이 나올 때 arr[K]가 아니라 arr[K-1]인지, 혹은 입력을 1-based로 받고 0-based로 변환했는지 확인한다.
+- [ ] **배열 크기 및 경계값 오류**
 
 </details>
