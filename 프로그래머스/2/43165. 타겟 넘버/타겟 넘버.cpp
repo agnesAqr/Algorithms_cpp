@@ -1,29 +1,21 @@
 #include <bits/stdc++.h>
-
 using namespace std;
 
-int sign[2] = {1, -1};
-
-void dfs(vector<int>& numbers, int index, int sum, int& answer, int target)
+void dfs(const vector<int>& numbers, int index, int currentSum, int target, int& answer)
 {
     if (index == numbers.size())
     {
-        if (sum == target)
-            answer++;
+        if (currentSum == target) answer++;
         return;
     }
     
-    for (auto s : sign)
-    {
-        sum += numbers[index] * s;
-        dfs(numbers, index + 1, sum, answer, target);
-        sum -= numbers[index] * s;
-    }
+    dfs(numbers, index + 1, currentSum + numbers[index], target, answer);
+    dfs(numbers, index + 1, currentSum - numbers[index], target, answer);
 }
 
-int solution(vector<int> numbers, int target) {
+int solution(vector<int> numbers, int target)
+{
     int answer = 0;
-    int sum = 0;
-    dfs(numbers, 0, sum, answer, target);
+    dfs(numbers, 0, 0, target, answer);
     return answer;
 }
