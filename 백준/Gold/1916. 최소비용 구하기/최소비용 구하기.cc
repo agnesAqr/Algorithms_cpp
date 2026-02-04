@@ -13,6 +13,7 @@ int dijkstra(int startCity, int targetCity, const vector<vector<pair<int, int>>>
 	{
 		auto [currCost, currNode] = pq.top();
 		pq.pop();
+		if (currCost > dist[currNode]) continue;
 
 		if (currNode == targetCity)
 			return dist[currNode];
