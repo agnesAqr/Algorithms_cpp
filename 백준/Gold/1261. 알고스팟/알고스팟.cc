@@ -9,39 +9,50 @@ int dy[4] = {0, 0, -1, 1};
 
 const int INF = 1e9;
 
-int dijkstra()
+void bfs_0_1()
 {
-	priority_queue<tuple<int, int, int>, vector<tuple<int, int, int>>, greater<tuple<int, int, int>>> pq;
-	
+	deque<pair<int, int>> dq;
+
 	for (int i=0; i<N; ++i)
-		fill(dist[i], dist[i]+M , INF);
-	
-	pq.emplace(0, 0, 0);
+	{
+		fill(dist[i], dist[i]+M, -1);
+	}
+	dq.push_back({0, 0});
 	dist[0][0] = 0;
 
-	while(!pq.empty())
+	while (!dq.empty())
 	{
-		auto [cost, row, col] = pq.top();
-		pq.pop();
+		auto [y, x] = dq.front();
+		dq.pop_front();
 
-		if (dist[row][col] < cost) continue;
+		if (y == N-1 && x == M-1)
+		{
+			cout << dist[y][x];
+			return;
+		}
 
 		for (int i=0; i<4; ++i)
 		{
-			int nr = row + dy[i];
-			int nc = col + dx[i];
+			int ny = y + dy[i];
+			int nx = x + dx[i];
 
-			if (nr < 0 || nc < 0 || nr >= N || nc >= M) continue;
+			if (ny<0 || nx<0 || ny>=N || nx>=M) continue;
 
-			int nextCost = cost + maps[nr][nc];
-			if (nextCost < dist[nr][nc])
+			if (dist[ny][nx] == -1)
 			{
-				dist[nr][nc] = nextCost;
-				pq.emplace(nextCost, nr, nc);
+				if (maps[ny][nx] == 0)
+				{
+					dist[ny][nx] = dist[y][x];
+					dq.push_front({ny, nx});
+				}
+				else
+				{
+					dist[ny][nx] = dist[y][x] + 1;
+					dq.push_back({ny, nx});
+				}
 			}
 		}
 	}
-	return dist[N-1][M-1];
 }
 
 int main()
@@ -59,7 +70,7 @@ int main()
 			maps[i][j] = s[j] - '0';
 		}
 	}
-	cout << dijkstra();
+	bfs_0_1();
 	
 	return 0;
 }
