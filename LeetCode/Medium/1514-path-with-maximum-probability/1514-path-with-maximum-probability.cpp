@@ -10,7 +10,7 @@ public:
             graph[edge[1]].emplace_back(succProb[i], edge[0]);
         }
 
-        auto dijkstra = [&](){
+        auto dijkstra = [&]() -> double {
             priority_queue<pair<double, int>> pq;
             pq.emplace(1.0, start_node);
             probability[start_node] = 1.0;
@@ -35,8 +35,6 @@ public:
             }
             return 0.0;
         };
-
-        dijkstra();
-        return probability[end_node];
+        return dijkstra();
     }
 };
