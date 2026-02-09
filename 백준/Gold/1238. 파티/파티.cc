@@ -1,35 +1,7 @@
 #include <bits/stdc++.h>
-#include <ranges>
 using namespace std;
 
 constexpr int INF = 1e9;
-
-int dijkstra(int N, int M, int start, int target, const vector<vector<pair<int, int>>>& maps)
-{
-	vector<int> dist(N+1, INF);
-
-	priority_queue<pair<int, int>, vector<pair<int, int>>, greater<>> pq;
-	pq.emplace(0, start);
-	dist[start] = 0;
-
-	while (!pq.empty())
-	{
-		auto [cost, node] = pq.top();
-		pq.pop();
-		if (dist[node] < cost) continue;
-
-		for (auto [nextCost, nextNode] : maps[node])
-		{
-			int newCost = cost + nextCost;
-			if (newCost < dist[nextNode])
-			{
-				pq.emplace(newCost, nextNode);
-				dist[nextNode] = newCost;
-			}
-		}
-	}
-	return dist[target];
-}
 
 int main()
 {
@@ -39,25 +11,50 @@ int main()
 	int N{}, M{}, X{};
 	cin >> N >> M >> X;
 
-	vector<vector<pair<int, int>>> maps(N+1);
-	vector<int> dist(N+1, INF);
+	vector<vector<pair<int, int>>> adj(N + 1);  // come (X -> Home)
+    vector<vector<pair<int, int>>> rev_adj(N + 1);  // go (Home -> X)
 	for (int i=0; i<M; ++i)
 	{
 		int start{}, end{}, cost{};
 		cin >> start >> end >> cost;
-		maps[start].emplace_back(cost, end);
-	}
-	
-	vector<int> resultDist(N+1, 0);
-	for (int i=1; i<=N; ++i)
-	{
-		resultDist[i] += dijkstra(N, M, i, X, maps);
-	}
-	for (int i=1; i<=N; ++i)
-	{
-		resultDist[i] += dijkstra(N, M, X, i, maps);
+		adj[start].emplace_back(cost, end);
+        rev_adj[end].emplace_back(cost, start);
 	}
 
-	cout << *max_element(resultDist.begin(), resultDist.end());
+	auto dijkstra = [&](int start, const vector<vector<pair<int,int>>>& graph)
+	{
+        vector<int> dist(N+1, INF);
+        priority_queue<pair<int,int>, vector<pair<int,int>>, greater<>> pq;
+        dist[start] = 0;
+        pq.emplace(0, start);
+
+        while (!pq.empty())
+		{
+            auto [cost, node] = pq.top();
+			pq.pop();
+
+            if (dist[node] < cost) continue;
+
+            for (auto [nextCost, nextNode] : graph[node])
+			{
+				int newCost = cost + nextCost;
+                if (newCost < dist[nextNode])
+				{
+                    dist[nextNode] = newCost;
+                    pq.emplace(newCost, nextNode);
+                }
+            }
+        }
+        return dist;
+    };
+	
+	auto come_dist = dijkstra(X, adj);
+	auto go_dist = dijkstra(X, rev_adj);
+
+	int result{};
+	for (int i=1; i<=N; ++i)
+		result = max(result, come_dist[i] + go_dist[i]);
+
+	cout << result;
 	return 0;
 }
