@@ -1,4 +1,4 @@
-#include <cstdio> // printf를 위해 필요
+#include <cstdio>
 
 int main() {
     int A, B;
