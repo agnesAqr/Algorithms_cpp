@@ -1,5 +1,6 @@
 #include <cstdio>
 
+// this is test code
 int main() {
     int A, B;
     scanf("%d %d", &A, &B);
