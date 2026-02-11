@@ -3,16 +3,15 @@
 
 using namespace std;
 
+// test code
 int solution(int n) {
     int answer = 0;
     
-    if (n % 2 == 1) { // n이 홀수라면
-        // 1부터 n까지 2씩 증가하며 더하기
+    if (n % 2 == 1) { 
         for (int i = 1; i <= n; i += 2) {
             answer += i;
         }
-    } else { // n이 짝수라면
-        // 2부터 n까지 2씩 증가하며 제곱 더하기
+    } else {
         for (int i = 2; i <= n; i += 2) {
             answer += i * i;
         }
