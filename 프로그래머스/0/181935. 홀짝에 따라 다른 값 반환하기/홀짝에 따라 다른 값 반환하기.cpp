@@ -3,7 +3,6 @@
 
 using namespace std;
 
-// test code
 int solution(int n) {
     int answer = 0;
     
