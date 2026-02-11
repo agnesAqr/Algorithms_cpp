@@ -3,7 +3,7 @@
 
 using namespace std;
 
-// this is test commit.
+// this is test2 commit.
 
 int solution(int n) {
     int answer = 0;
