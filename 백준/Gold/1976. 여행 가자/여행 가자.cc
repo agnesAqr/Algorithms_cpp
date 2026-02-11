@@ -69,18 +69,24 @@ int main()
                 uf.unite(i, j);
         }
     }
+    
+    if (M == 0)
+    {
+        cout << "YES";
+        return 0;
+    }
+    
+    int firstCity{};
+    cin >> firstCity;
+    int root = uf.find(firstCity);
 
     bool possible = true;
-    vector<int> travelRoute(M, 0);
-    for (int i=0; i<M; ++i)
+    for (int i=1; i<M; ++i)
     {
-        int travelNode{};
-        cin >> travelNode;
-        travelRoute[i] = travelNode;
-        if (i > 0)
-        {
-            possible &= uf.isConnected(travelRoute[i-1], travelRoute[i]);
-        }
+        int nextCity;
+        cin >> nextCity;
+        if (root != uf.find(nextCity))
+            possible = false;
     }
     cout << (possible ? "YES" : "NO");
 
