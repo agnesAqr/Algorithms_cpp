@@ -1,46 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
-
-struct Edge
-{
-    Edge(int u, int v, int w) : u(u), v(v), w(w){};
-    bool operator<(const Edge& other) const { return w < other.w; }
-    int u, v, w;   
-};
-
-class UnionFind
-{
-private:
-    vector<int> parent;
-    vector<int> rank;
-public:
-    UnionFind(int n) : parent(n+1), rank(n+1, 0)
-    {
-        iota(parent.begin(), parent.end(), 0);
-    }
-    int find(int x)
-    {
-        if (parent[x] == x) return x;
-        return parent[x] = find(parent[x]);
-    }
-    bool unite(int x, int y)
-    {
-        x = find(x);
-        y = find(y);
-        if (x == y) return false;
-
-        if (rank[x] > rank[y])
-            parent[y] = x;
-        else if (rank[y] > rank[x])
-            parent[x] = y;
-        else
-        {
-            parent[x] = y;
-            rank[y]++;
-        }
-        return true;
-    }
-};
+using pii = pair<int, int>;
 
 int main()
 {
@@ -49,25 +9,36 @@ int main()
 
     int N{}, M{};
     cin >> N >> M;
-    vector<Edge> edges{};
-    edges.reserve(M);
+    vector<vector<pii>> adj_edges(N+1);
     for (int i=0; i<M; ++i)
     {
         int u{}, v{}, w{};
         cin >> u >> v >> w;
-        edges.emplace_back(u, v, w);
+        adj_edges[u].emplace_back(w, v);
+        adj_edges[v].emplace_back(w, u);
     }
-    sort(edges.begin(), edges.end());
 
-    UnionFind uf(N+1);
+    priority_queue<pii, vector<pii>, greater<>> pq;
+    vector<bool> visited(N+1, false);
+    pq.emplace(0, 1);
+
     int mst_weight{}, mst_edge{};
-    for (const auto& [u, v, w] : edges)
+
+    while (!pq.empty())
     {
-        if (uf.unite(u, v))
+        auto [w, node] = pq.top();
+        pq.pop();
+
+        if (visited[node]) continue;
+
+        visited[node] = true;
+        mst_weight += w;
+        mst_edge++;
+
+        for (const auto& [nw, nextNode] : adj_edges[node])
         {
-            mst_weight += w;
-            mst_edge++;
-            if (mst_edge == N-1) break;
+            if (!visited[nextNode])
+                pq.emplace(nw, nextNode);
         }
     }
     cout << mst_weight;
