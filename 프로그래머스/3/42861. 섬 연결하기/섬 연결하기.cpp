@@ -4,7 +4,7 @@ using namespace std;
 struct Edge
 {
     Edge(int u, int v, int w) : u(u), v(v), w(w){};
-    bool operator<(const Edge other) { return w < other.w; }
+    bool operator<(const Edge& other) { return w < other.w; }
     int u, v, w;
 };
 
@@ -57,9 +57,7 @@ int solution(int n, vector<vector<int>> costs) {
         if (uf.unite(u, v))
         {
             mst_weight += w;
-            mst_edgeCount++;
-            
-            if (mst_edgeCount == n-1) break;
+            if (++mst_edgeCount == n-1) break;
         }
     }
     
