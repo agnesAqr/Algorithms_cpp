@@ -7,16 +7,15 @@ struct Edge
     int u{}, v{};
     float w{};
     Edge(int u, int v, float w) : u(u), v(v), w(w){};
-    bool operator<(const Edge& other){ return w < other.w; }
+    bool operator<(const Edge& other) const { return w < other.w; }
 };
 
 class UnionFind
 {
 private:
-    vector<int> parent;
-    vector<int> rank;
+    vector<int> parent, rank;
 public:
-    UnionFind(int n) : parent(n+1), rank(n+1, 0)
+    UnionFind(int n) : parent(n), rank(n, 0)
     {
         iota(parent.begin(), parent.end(), 0);
     }
@@ -54,20 +53,18 @@ int main()
 
     int n{};
     cin >> n;
-    vector<pff> stars;
-    stars.reserve(n);
+
+    vector<pff> stars(n);
     for (int i=0; i<n; ++i)
     {
-        float x{}, y{};
-        cin >> x >> y;
-        stars.emplace_back(x, y);
+        cin >> stars[i].first >> stars[i].second;
     }
 
     vector<Edge> edges;
-    edges.reserve(n*(n-1));
+    edges.reserve(n*(n-1)/2);
     for (int i=0; i<n; ++i)
     {
-        for (int j=0; j<n; ++j)
+        for (int j=i+1; j<n; ++j)
         {
             if (j == i) continue;
             float dist = CalculateCost(stars[i], stars[j]);
@@ -84,14 +81,11 @@ int main()
         if (uf.unite(u, v))
         {
             mst_weight += w;
-            mst_edgeCount++;
-            if (mst_edgeCount == n-1)
-            {
-                printf("%.2f\n", mst_weight);
+            if (++mst_edgeCount == n-1)
                 break;
-            }
         }
     }
+    printf("%.2f\n", mst_weight);
     
 	return 0;
 }
