@@ -85,7 +85,7 @@ int main()
                 break;
         }
     }
-    printf("%.2f\n", mst_weight);
+    cout << fixed << setprecision(2) << mst_weight << "\n";
     
 	return 0;
 }
