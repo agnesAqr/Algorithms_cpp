@@ -57,19 +57,24 @@ int main()
         edges.emplace_back(u, v, w);
     }
     sort(edges.begin(), edges.end());
+    
+    if (N == 2)
+    {
+        cout << 0;
+        return 0;
+    }
 
     UnionFind uf(N);
-    int mst_weight{}, mst_edgeCount{}, maxCost{};
+    int mst_weight{}, mst_edgeCount{};
     for (const auto& [u, v, w] : edges)
     {
         if (uf.unite(u, v))
         {
             mst_weight += w;
             mst_edgeCount++;
-            maxCost = max(maxCost, w);
-            if (mst_edgeCount == N-1)
+            if (mst_edgeCount == N-2)
             {
-                cout << mst_weight - maxCost;
+                cout << mst_weight;
                 break;
             }
         }
