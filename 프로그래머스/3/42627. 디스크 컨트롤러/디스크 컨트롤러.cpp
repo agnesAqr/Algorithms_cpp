@@ -1,44 +1,38 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-struct Disk
+struct Compare
 {
-    int idx{}, requestTime{}, duration{};
-    Disk(int i, int r, int d) : idx(i), requestTime(r), duration(d) {};
-    bool operator>(const Disk& other) const
+    bool operator()(const vector<int>& a, const vector<int>& b)
     {
-        return std::tie(duration, requestTime, idx) >
-            std::tie(other.duration, other.requestTime, other.idx);
+        return a[1] > b[1];  // Min-Heap
     }
 };
 
 int solution(vector<vector<int>> jobs) {
-    priority_queue<Disk, vector<Disk>, greater<>> pq;
+    int totalTime = 0, currTime = 0, currJobIdx = 0;
+    int n = jobs.size();
+    priority_queue<vector<int>, vector<vector<int>>, Compare> pq;
+    
     sort(jobs.begin(), jobs.end());
-    int currTime = 0;
-    int currJobIdx = 0;
-    int totalTime = 0;
 
-    while (true)
+    while (currJobIdx < n || !pq.empty())
     {
-        if (pq.empty() && currJobIdx == jobs.size()) break;
-
-        while (currJobIdx < jobs.size() && jobs[currJobIdx][0] <= currTime)
+        while (currJobIdx < n && jobs[currJobIdx][0] <= currTime)
         {
-            pq.emplace(currJobIdx, jobs[currJobIdx][0], jobs[currJobIdx][1]);
-            currJobIdx++;
+            pq.push(jobs[currJobIdx++]);
         }
 
         if (!pq.empty())
         {
-            auto& currDisk = pq.top();
-            currTime += currDisk.duration;
-            totalTime += currTime - currDisk.requestTime;
+            vector<int> job = pq.top();
             pq.pop();
+            
+            currTime += job[1];
+            totalTime += currTime - job[0];
         }
         else
-            currTime++;
+            currTime = jobs[currJobIdx][0];
     }
-    int answer = totalTime / jobs.size();
-    return answer;
+    return totalTime/n;
 }
