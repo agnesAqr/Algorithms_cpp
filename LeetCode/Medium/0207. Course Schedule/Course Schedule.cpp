@@ -1,5 +1,3 @@
-        else
-        {
             parent[x] = y;
             rank[y]++;
         }
