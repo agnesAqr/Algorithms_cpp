@@ -1,29 +1,45 @@
-#include <string>
-#include <vector>
-
+#include <bits/stdc++.h>
 using namespace std;
 
-void dfs(int currComputer, int n, const vector<vector<int>>& computers, vector<bool>& visited)
+vector<vector<int>> adj;
+vector<bool> visited;
+int connectedNodeCount;
+
+void dfs(int start)
 {
-    visited[currComputer] = true;
-    
-    for (int i=0; i<n; i++)
+    visited[start] = true;
+    connectedNodeCount++;
+    for (int nextComputer : adj[start])
     {
-        if (computers[currComputer][i]== 1 && !visited[i])
-            dfs(i, n, computers, visited);
+        if (visited[nextComputer]) continue;
+        dfs(nextComputer);
     }
 }
 
 int solution(int n, vector<vector<int>> computers) {
     int answer = 0;
-    vector<bool> visited(n, false);
-    for (int i=0; i<n; i++)
+    
+    adj.assign(n, vector<int>());
+    visited.assign(n, false);
+    for (int i=0; i<n; ++i)
     {
-        if (!visited[i])
+        for (int j=0; j<n; ++j)
         {
-            answer++;
-            dfs(i, n, computers, visited);
+            if (i == j || computers[i][j] == 0) continue;
+            adj[i].push_back(j);
         }
     }
+    
+    for (int i=0; i<n; ++i)
+    {
+        if (visited[i]) continue;
+        
+        connectedNodeCount = 0;
+        dfs(i);
+        if (connectedNodeCount > 0)
+            answer++;
+    }
+    
+    
     return answer;
 }
