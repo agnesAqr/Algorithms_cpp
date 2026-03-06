@@ -3,39 +3,32 @@ using namespace std;
 
 vector<int> solution(string msg) {
     vector<int> answer;
-    
-    unordered_map<string, int> maps;
+    unordered_map<string, int> dict;
     for (int i=0; i<26; ++i)
     {
-        char c = 'A' + i;
-        string key = string(1, c);
-        maps[key] = i+1;
+        dict[string(1, 'A') + i] = i+1;
     }
     
-    int n = msg.size();
-    int nextIdx = 26;
-    string s = "";
-    int pass{};
-    for (int i=0; i<n; ++i)
+    int n = msg.length();
+    int nextIdx = 27;
+    
+    for (int i=0; i<n; )
     {
-        if (pass > 0)
-        {
-            pass--;
-            continue;
-        }
+        string w = "";
+        w += msg[i];
+        int j = i+1;
         
-        int startIdx = i;
-        s += msg[i];
-        while (maps.find(s) != maps.end())
+        while (j<n && dict.find(w+msg[j]) != dict.end())
         {
-            startIdx++;
-            s += msg[startIdx];
+            w += msg[j];
+            j++;
         }
-        maps[s] = ++nextIdx;
-        pass = startIdx - i - 1;
-        s.pop_back();
-        answer.emplace_back(maps[s]);
-        s = "";
+        answer.push_back(dict[w]);
+        if (j<n)
+        {
+            dict[w + msg[j]] = nextIdx++;
+        }
+        i = j;
     }
     return answer;
 }
