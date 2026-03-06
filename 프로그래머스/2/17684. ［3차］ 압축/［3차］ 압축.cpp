@@ -6,7 +6,9 @@ vector<int> solution(string msg) {
     unordered_map<string, int> dict;
     for (int i=0; i<26; ++i)
     {
-        dict[string(1, 'A') + i] = i+1;
+        string key = "";
+        key = (char)('A' + i);
+        dict[key] = i+1;
     }
     
     int n = msg.length();
