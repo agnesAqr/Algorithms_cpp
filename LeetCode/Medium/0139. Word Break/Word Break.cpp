@@ -6,13 +6,13 @@ public:
         vector<bool> dp(n+1, false);
         dp[0] = true;
 
-        for (int i=1; i<=n; ++i)
+        for (int i=1; i<=n; ++i)  // length of s
         {
-            for (int j=0; j<i; ++j)
+            for (int j=0; j<i; ++j)  // index of s
             {
-                if (dp[j] && dict.count(s.substr(j, i-j)) > 0)
-            }
+                if (dp[j] && dict.count(s.substr(j, i-j)) > 0)  // s[j:i]
                 {
                     dp[i] = true;
-                }
                     break;
+                }
+            }
