@@ -1,16 +1,28 @@
+                        changes.emplace(r, c);
+                if (board[r][c] == 1)
                 {
-                    int nr = r + dr[i];
-                int live = 0;
-                for (int i=0; i<8; ++i)
+                    if (live < 2)
+                    }
+                }
+                    {
+                        changes.emplace(r, c);
+                        break;
+                    if (board[r][c] == 1 && live > 3)
+                }
+                else
+                {
+                    if (live == 3)
+                        changes.emplace(r, c);
+                }
+            }
+        }
+
+        while (!changes.empty())
         {
-            for (int c=0; c<n; ++c)
-            {
-        int n = board[0].size();
-        for (int r=0; r<m; ++r)
-    void gameOfLife(vector<vector<int>>& board) {
-        queue<pair<int, int>> changes;
-        int m = board.size();
-    int dr[8] = {-1, -1, -1, 0, 0, 1, 1, 1};
-    int dc[8] = {-1, 0, 1, -1, 1, -1, 0, 1};
-class Solution {
-public:
+            auto [r, c] = changes.front();
+            changes.pop();
+            int newVal = board[r][c] == 0 ? 1 : 0;
+            board[r][c] = newVal;
+        }
+    }
+};
